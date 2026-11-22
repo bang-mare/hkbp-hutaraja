@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { Header } from '../components/Header';
+import { LogoEditorModal } from '../components/LogoEditorModal';
 import { Toast, type ToastState } from '../components/Toast';
 import { PhonePreview } from '../components/editor/PhonePreview';
 import { TabBagikan } from '../components/editor/TabBagikan';
@@ -17,6 +18,7 @@ import {
   createInitialEditorState,
   mapDbRowToLink,
   normalizeUrl,
+  setStoredBrandLogo,
   validateFooterConfig,
   validateSocialLinks,
   validateStyleConfig,
@@ -25,6 +27,7 @@ import type {
   EditorState,
   EditorTab,
   FooterConfig,
+  IconId,
   LinkItem,
   ProfileInfo,
   SaveStatus,
@@ -61,6 +64,17 @@ function isLinkValidForDb(link: LinkItem): boolean {
   return /^(https?:\/\/|mailto:)/i.test(normalized);
 }
 
+function isMissingDescriptionColumnError(
+  err: { code?: string; message?: string } | null | undefined
+): boolean {
+  if (!err) return false;
+  return (
+    err.code === '42703' ||
+    err.code === 'PGRST204' ||
+    String(err.message || '').toLowerCase().includes('description')
+  );
+}
+
 export const EditorPage: React.FC = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -70,6 +84,8 @@ export const EditorPage: React.FC = () => {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingBrandLogo, setUploadingBrandLogo] = useState(false);
+  const [logoModalOpen, setLogoModalOpen] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const persistedLinkIdsRef = useRef<Set<string>>(new Set());
@@ -77,6 +93,10 @@ export const EditorPage: React.FC = () => {
   const linkTimersRef = useRef<Record<string, number>>({});
   const stateRef = useRef<EditorState>(state);
   stateRef.current = state;
+
+  useEffect(() => {
+    setStoredBrandLogo(state.style.brandLogo || '');
+  }, [state.style.brandLogo]);
 
   const showToast = useCallback((message: string, onUndo?: () => void) => {
     setToast({ id: Date.now() + Math.random(), message, onUndo });
@@ -116,11 +136,20 @@ export const EditorPage: React.FC = () => {
       return;
     }
 
-    const { data: linkRows } = await supabase
+    let { data: linkRows, error: linksErr } = await supabase
       .from('links')
-      .select('id, title, url, icon, color, text_color, border_color, is_active, position, clicks_total')
+      .select('id, title, description, url, icon, color, text_color, border_color, is_active, position, clicks_total')
       .eq('profile_id', currentUser.id)
       .order('position', { ascending: true });
+
+    if (isMissingDescriptionColumnError(linksErr)) {
+      const fallback = await supabase
+        .from('links')
+        .select('id, title, url, icon, color, text_color, border_color, is_active, position, clicks_total')
+        .eq('profile_id', currentUser.id)
+        .order('position', { ascending: true });
+      linkRows = fallback.data as typeof linkRows;
+    }
 
     const mappedLinks = Array.isArray(linkRows) ? linkRows.map(mapDbRowToLink) : [];
     persistedLinkIdsRef.current = new Set(mappedLinks.map((l) => l.id));
@@ -244,7 +273,8 @@ export const EditorPage: React.FC = () => {
 
       setSaveStatus('saving');
       const normalizedUrl = normalizeUrl(link.url);
-      const payload = {
+      const trimmedDesc = link.desc.trim().slice(0, 120);
+      const basePayload = {
         id: link.id,
         profile_id: user.id,
         title: link.title.trim().slice(0, 70),
@@ -256,27 +286,61 @@ export const EditorPage: React.FC = () => {
         is_active: link.on,
         position,
       };
+      const fullPayload = {
+        ...basePayload,
+        description: trimmedDesc,
+      };
 
+      const isExisting = persistedLinkIdsRef.current.has(link.id);
       let err;
-      if (persistedLinkIdsRef.current.has(link.id)) {
+      let usedFallbackWithoutDesc = false;
+
+      if (isExisting) {
         const res = await supabase
           .from('links')
           .update({
-            title: payload.title,
-            url: payload.url,
-            icon: payload.icon,
-            color: payload.color,
-            text_color: payload.text_color,
-            border_color: payload.border_color,
-            is_active: payload.is_active,
-            position: payload.position,
+            title: fullPayload.title,
+            description: fullPayload.description,
+            url: fullPayload.url,
+            icon: fullPayload.icon,
+            color: fullPayload.color,
+            text_color: fullPayload.text_color,
+            border_color: fullPayload.border_color,
+            is_active: fullPayload.is_active,
+            position: fullPayload.position,
           })
           .eq('id', link.id)
           .eq('profile_id', user.id);
         err = res.error;
+
+        if (isMissingDescriptionColumnError(err)) {
+          const fallbackRes = await supabase
+            .from('links')
+            .update({
+              title: basePayload.title,
+              url: basePayload.url,
+              icon: basePayload.icon,
+              color: basePayload.color,
+              text_color: basePayload.text_color,
+              border_color: basePayload.border_color,
+              is_active: basePayload.is_active,
+              position: basePayload.position,
+            })
+            .eq('id', link.id)
+            .eq('profile_id', user.id);
+          err = fallbackRes.error;
+          usedFallbackWithoutDesc = true;
+        }
       } else {
-        const res = await supabase.from('links').insert(payload);
+        const res = await supabase.from('links').insert(fullPayload);
         err = res.error;
+
+        if (isMissingDescriptionColumnError(err)) {
+          const fallbackRes = await supabase.from('links').insert(basePayload);
+          err = fallbackRes.error;
+          usedFallbackWithoutDesc = true;
+        }
+
         if (!err) {
           persistedLinkIdsRef.current.add(link.id);
         }
@@ -289,6 +353,9 @@ export const EditorPage: React.FC = () => {
       } else {
         setSaveStatus('saved');
         setHasUnsavedChanges(false);
+        if (usedFallbackWithoutDesc && trimmedDesc) {
+          showToast('Jalankan 003_link_description.sql di Supabase untuk menyimpan deskripsi.');
+        }
         return true;
       }
     },
@@ -447,11 +514,78 @@ export const EditorPage: React.FC = () => {
     });
   };
 
+  const handleUploadBrandLogo = async (blob: Blob) => {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+    setUploadingBrandLogo(true);
+    const objectPath = `${user.id}/brand-logo.png`;
+    const { error: uploadErr } = await supabase.storage
+      .from('avatars')
+      .upload(objectPath, blob, {
+        upsert: true,
+        contentType: 'image/png',
+      });
+
+    if (uploadErr) {
+      setUploadingBrandLogo(false);
+      showToast('Gagal mengunggah logo.');
+      return;
+    }
+
+    const { data: pub } = supabase.storage.from('avatars').getPublicUrl(objectPath);
+    const versionedUrl = `${pub.publicUrl}?v=${Date.now()}`;
+
+    setUploadingBrandLogo(false);
+    setState((prev) => {
+      const next = {
+        ...prev,
+        style: { ...prev.style, brandLogo: versionedUrl },
+      };
+      persistProfileNow(next);
+      return next;
+    });
+    setLogoModalOpen(false);
+    showToast('Logo berhasil diperbarui');
+  };
+
+  const handleRemoveBrandLogo = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+    setUploadingBrandLogo(true);
+    await supabase.storage.from('avatars').remove([`${user.id}/brand-logo.png`]);
+    setUploadingBrandLogo(false);
+    setState((prev) => {
+      const next = {
+        ...prev,
+        style: { ...prev.style, brandLogo: '' },
+      };
+      persistProfileNow(next);
+      return next;
+    });
+    setLogoModalOpen(false);
+    showToast('Logo dikembalikan ke bawaan');
+  };
+
+  const handleSelectBrandLogoIcon = (icon: IconId | '') => {
+    const nextLogo = icon ? `icon:${icon}` : '';
+    setState((prev) => {
+      const next = {
+        ...prev,
+        style: { ...prev.style, brandLogo: nextLogo },
+      };
+      persistProfileNow(next);
+      return next;
+    });
+    setLogoModalOpen(false);
+    showToast('Logo berhasil diperbarui');
+  };
+
   const handleAddLink = async (): Promise<string | null> => {
     const newId = crypto.randomUUID();
     const newItem: LinkItem = {
       id: newId,
       title: '',
+      desc: '',
       url: '',
       on: true,
       clicks: 0,
@@ -474,6 +608,7 @@ export const EditorPage: React.FC = () => {
     const samples: LinkItem[] = SAMPLE_LINKS_DATA.map((s) => ({
       id: crypto.randomUUID(),
       title: s.title,
+      desc: '',
       url: s.url,
       on: true,
       clicks: 0,
@@ -560,7 +695,7 @@ export const EditorPage: React.FC = () => {
 
       if (wasPersisted && supabase && user && isLinkValidForDb(removed)) {
         setSaveStatus('saving');
-        const { error } = await supabase.from('links').insert({
+        const baseInsert = {
           id: removed.id,
           profile_id: user.id,
           title: removed.title.trim().slice(0, 70),
@@ -572,7 +707,15 @@ export const EditorPage: React.FC = () => {
           is_active: removed.on,
           position: index,
           clicks_total: removed.clicks,
+        };
+        let { error } = await supabase.from('links').insert({
+          ...baseInsert,
+          description: removed.desc.trim().slice(0, 120),
         });
+        if (isMissingDescriptionColumnError(error)) {
+          const fallback = await supabase.from('links').insert(baseInsert);
+          error = fallback.error;
+        }
         if (error) {
           setSaveStatus('error');
           showToast('Gagal menyimpan. Coba lagi.');
@@ -762,6 +905,8 @@ export const EditorPage: React.FC = () => {
         username={state.profile.user}
         name={state.profile.name}
         avatar={state.profile.avatar}
+        brandLogo={state.style.brandLogo || ''}
+        onEditLogo={() => setLogoModalOpen(true)}
         onViewPage={() => window.open(`/${state.profile.user}`, '_blank', 'noopener,noreferrer')}
         onSignOut={handleSignOut}
       />
@@ -815,6 +960,9 @@ export const EditorPage: React.FC = () => {
               onStyleChange={handleStyleChange}
               onResetColors={handleResetColors}
               onFooterChange={handleFooterChange}
+              onOpenLogoEditor={() => setLogoModalOpen(true)}
+              onRemoveBrandLogo={handleRemoveBrandLogo}
+              uploadingBrandLogo={uploadingBrandLogo}
             />
           )}
 
@@ -934,6 +1082,17 @@ export const EditorPage: React.FC = () => {
           </button>
         ))}
       </nav>
+
+      <LogoEditorModal
+        open={logoModalOpen}
+        brandLogo={state.style.brandLogo || ''}
+        uploading={uploadingBrandLogo}
+        onClose={() => setLogoModalOpen(false)}
+        onUploadLogo={handleUploadBrandLogo}
+        onSelectIcon={handleSelectBrandLogoIcon}
+        onRemoveLogo={handleRemoveBrandLogo}
+        onShowToast={(msg) => showToast(msg)}
+      />
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>

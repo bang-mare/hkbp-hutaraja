@@ -527,6 +527,29 @@ export const TabLink: React.FC<TabLinkProps> = ({
 
                       <div>
                         <label
+                          htmlFor={`link-desc-${item.id}`}
+                          className="sr-only"
+                        >
+                          Deskripsi singkat
+                        </label>
+                        <input
+                          id={`link-desc-${item.id}`}
+                          type="text"
+                          className="mare-input"
+                          maxLength={120}
+                          placeholder="Deskripsi singkat tentang link ini (opsional)"
+                          value={item.desc}
+                          style={{ background: 'var(--sf)' }}
+                          onChange={(e) =>
+                            onUpdateLink(item.id, {
+                              desc: e.target.value.slice(0, 120),
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <label
                           htmlFor={`link-url-${item.id}`}
                           className="sr-only"
                         >

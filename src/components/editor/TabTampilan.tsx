@@ -1,4 +1,5 @@
 import React from 'react';
+import { UiIcon } from '../../lib/icons';
 import {
   ACCENT_PRESETS,
   BG_PRESETS,
@@ -6,6 +7,7 @@ import {
   CARD_TEXT_BORDER_PRESETS,
   DEFAULT_FOOTER,
   THEMES,
+  validateBrandLogo,
 } from '../../lib/theme';
 import type {
   ButtonFill,
@@ -16,6 +18,7 @@ import type {
   StyleConfig,
   ThemeId,
 } from '../../lib/types';
+import { BrandLogo } from '../BrandLogo';
 
 interface TabTampilanProps {
   styleConfig: StyleConfig;
@@ -24,6 +27,9 @@ interface TabTampilanProps {
   onStyleChange: (patch: Partial<StyleConfig>) => void;
   onResetColors: () => void;
   onFooterChange: (patch: Partial<FooterConfig>) => void;
+  onOpenLogoEditor: () => void;
+  onRemoveBrandLogo: () => Promise<void>;
+  uploadingBrandLogo: boolean;
 }
 
 export const TabTampilan: React.FC<TabTampilanProps> = ({
@@ -33,7 +39,11 @@ export const TabTampilan: React.FC<TabTampilanProps> = ({
   onStyleChange,
   onResetColors,
   onFooterChange,
+  onOpenLogoEditor,
+  onRemoveBrandLogo,
+  uploadingBrandLogo,
 }) => {
+  const activeBrandLogo = validateBrandLogo(styleConfig.brandLogo);
   const renderSwatchGroup = (
     label: string,
     field: 'bg' | 'card' | 'ac' | 'tc' | 'bc',
@@ -471,6 +481,63 @@ export const TabTampilan: React.FC<TabTampilanProps> = ({
             </div>
           </div>
         )}
+      </section>
+
+      {/* Kartu Logo Aplikasi */}
+      <section className="mare-card" aria-labelledby="card-brand-logo-title">
+        <h2
+          id="card-brand-logo-title"
+          className="font-display"
+          style={{ margin: '0 0 14px', fontSize: 18, fontWeight: 800 }}
+        >
+          Logo Aplikasi
+        </h2>
+
+        <div
+          className="mare-subcard"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+            <BrandLogo logo={activeBrandLogo} size={22} />
+            <div>
+              <div className="mare-wordmark" style={{ fontSize: 16 }}>
+                HKBP <span className="mare-wordmark-accent">Hutaraja</span>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--mu)', marginTop: 4 }}>
+                {activeBrandLogo ? 'Logo khusus aktif' : 'Logo gelombang bawaan'}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="mare-btn-primary mare-btn-sm"
+              disabled={uploadingBrandLogo}
+              onClick={onOpenLogoEditor}
+            >
+              <UiIcon name="pencil" size={14} />
+              <span>{uploadingBrandLogo ? 'Mengunggah...' : 'Ubah logo'}</span>
+            </button>
+            {activeBrandLogo && (
+              <button
+                type="button"
+                className="mare-btn-ghost mare-btn-sm"
+                disabled={uploadingBrandLogo}
+                onClick={onRemoveBrandLogo}
+                style={{ color: 'var(--dg)' }}
+              >
+                Pulihkan bawaan
+              </button>
+            )}
+          </div>
+        </div>
       </section>
     </div>
   );

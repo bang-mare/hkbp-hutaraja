@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WaveLogoIcon } from '../lib/icons';
+import { BrandLogo } from '../components/BrandLogo';
 import { getSiteHost, getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 
 export const LoginPage: React.FC = () => {
@@ -80,9 +80,7 @@ export const LoginPage: React.FC = () => {
             marginBottom: 18,
           }}
         >
-          <div className="mare-logo" aria-hidden="true">
-            <WaveLogoIcon size={22} />
-          </div>
+          <BrandLogo size={22} />
           <span className="mare-wordmark">
             HKBP <span className="mare-wordmark-accent">Hutaraja</span>
           </span>

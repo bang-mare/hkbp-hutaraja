@@ -48,12 +48,27 @@ export const PublicProfilePage: React.FC<PublicProfilePageProps> = ({
         return;
       }
 
-      const { data: linkRows } = await supabase
+      let { data: linkRows, error: linksErr } = await supabase
         .from('links')
-        .select('id, title, url, icon, color, text_color, border_color, is_active, position, clicks_total')
+        .select('id, title, description, url, icon, color, text_color, border_color, is_active, position, clicks_total')
         .eq('profile_id', profile.id)
         .eq('is_active', true)
         .order('position', { ascending: true });
+
+      if (
+        linksErr &&
+        (linksErr.code === '42703' ||
+          linksErr.code === 'PGRST204' ||
+          String(linksErr.message || '').toLowerCase().includes('description'))
+      ) {
+        const fallback = await supabase
+          .from('links')
+          .select('id, title, url, icon, color, text_color, border_color, is_active, position, clicks_total')
+          .eq('profile_id', profile.id)
+          .eq('is_active', true)
+          .order('position', { ascending: true });
+        linkRows = fallback.data as typeof linkRows;
+      }
 
       if (!active) return;
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { WaveLogoIcon } from '../lib/icons';
+import { BrandLogo } from '../components/BrandLogo';
 import { getSiteHost, getSupabaseClient } from '../lib/supabase';
 import {
   DEFAULT_FOOTER,
@@ -127,9 +127,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-            <div className="mare-logo" aria-hidden="true">
-              <WaveLogoIcon size={22} />
-            </div>
+            <BrandLogo size={22} />
             <span className="mare-wordmark">
               HKBP <span className="mare-wordmark-accent">Hutaraja</span>
             </span>

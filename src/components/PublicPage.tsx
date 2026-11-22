@@ -3,7 +3,6 @@ import { LineIcon, UiIcon, WaveLogoIcon, detectIconFromUrl } from '../lib/icons'
 import {
   autoContrastText,
   buildSocialUrl,
-  extractDomain,
   getThemePreset,
   sanitizeSafeHref,
 } from '../lib/theme';
@@ -181,7 +180,7 @@ export const PublicPage: React.FC<PublicPageProps> = ({
             {visibleLinks.map((item, idx) => {
               const iconName: IconId =
                 item.ic || detectIconFromUrl(item.url);
-              const domain = extractDomain(item.url);
+              const descText = item.desc.trim();
 
               const lbg = item.color
                 ? item.color
@@ -254,9 +253,9 @@ export const PublicPage: React.FC<PublicPageProps> = ({
                       <span className="mare-pub-link-title" style={{ display: 'block' }}>
                         {item.title}
                       </span>
-                      {domain && (
+                      {descText && (
                         <span className="mare-pub-link-domain" style={{ display: 'block' }}>
-                          {domain}
+                          {descText}
                         </span>
                       )}
                     </span>

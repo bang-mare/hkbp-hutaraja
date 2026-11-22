@@ -310,6 +310,43 @@ export function validateIconId(value: unknown): IconId | '' {
   return '';
 }
 
+export const BRAND_LOGO_STORAGE_KEY = 'hkbp_brand_logo';
+
+export function validateBrandLogo(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('icon:')) {
+    const iconId = validateIconId(trimmed.slice(5));
+    return iconId ? `icon:${iconId}` : '';
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.slice(0, 500);
+  }
+  return '';
+}
+
+export function getStoredBrandLogo(): string {
+  try {
+    return validateBrandLogo(window.localStorage.getItem(BRAND_LOGO_STORAGE_KEY));
+  } catch {
+    return '';
+  }
+}
+
+export function setStoredBrandLogo(logo: string): void {
+  try {
+    const clean = validateBrandLogo(logo);
+    if (clean) {
+      window.localStorage.setItem(BRAND_LOGO_STORAGE_KEY, clean);
+    } else {
+      window.localStorage.removeItem(BRAND_LOGO_STORAGE_KEY);
+    }
+  } catch {
+    // Abaikan jika localStorage diblokir
+  }
+}
+
 function hexLuminance(hex: string): number {
   const clean = hex.replace('#', '');
   const r = parseInt(clean.slice(0, 2), 16) / 255;
@@ -428,6 +465,7 @@ export const DEFAULT_STYLE: StyleConfig = {
   ac: '',
   tc: '',
   bc: '',
+  brandLogo: '',
 };
 
 export const DEFAULT_FOOTER: FooterConfig = {
@@ -486,6 +524,7 @@ export function validateStyleConfig(raw: unknown): StyleConfig {
     ac: validateHexColor(obj.ac),
     tc: validateHexColor(obj.tc),
     bc: validateHexColor(obj.bc),
+    brandLogo: validateBrandLogo(obj.brandLogo),
   };
 }
 
@@ -524,6 +563,7 @@ export function mapDbRowToLink(row: Record<string, unknown>): LinkItem {
   return {
     id: String(row.id || ''),
     title: typeof row.title === 'string' ? row.title.slice(0, 70) : '',
+    desc: typeof row.description === 'string' ? row.description.slice(0, 120) : '',
     url: sanitizeSafeHref(rawUrl),
     on: typeof row.is_active === 'boolean' ? row.is_active : true,
     clicks: typeof row.clicks_total === 'number' ? row.clicks_total : Number(row.clicks_total || 0),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { WaveLogoIcon } from '../lib/icons';
+import { BrandLogo } from '../components/BrandLogo';
 import { navigate } from '../lib/router';
 
 export const NotFoundPage: React.FC = () => {
@@ -22,13 +22,7 @@ export const NotFoundPage: React.FC = () => {
           padding: 28,
         }}
       >
-        <div
-          className="mare-logo"
-          style={{ margin: '0 auto 16px' }}
-          aria-hidden="true"
-        >
-          <WaveLogoIcon size={22} />
-        </div>
+        <BrandLogo size={22} style={{ margin: '0 auto 16px' }} />
         <h1
           className="font-display"
           style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 800 }}

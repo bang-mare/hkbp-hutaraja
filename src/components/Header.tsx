@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { UiIcon, WaveLogoIcon } from '../lib/icons';
+import { UiIcon } from '../lib/icons';
 import type { SaveStatus } from '../lib/types';
+import { BrandLogo } from './BrandLogo';
 
 interface HeaderProps {
   saveStatus: SaveStatus;
@@ -10,6 +11,8 @@ interface HeaderProps {
   username: string;
   name: string;
   avatar: string;
+  brandLogo?: string;
+  onEditLogo?: () => void;
   onViewPage: () => void;
   onSignOut: () => void;
 }
@@ -22,6 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   username,
   name,
   avatar,
+  brandLogo,
+  onEditLogo,
   onViewPage,
   onSignOut,
 }) => {
@@ -51,12 +56,60 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="mare-header">
       <div className="mare-brand">
-        <div className="mare-logo" aria-hidden="true">
-          <WaveLogoIcon size={22} />
-        </div>
-        <span className="mare-wordmark">
-          HKBP <span className="mare-wordmark-accent">Hutaraja</span>
-        </span>
+        {onEditLogo ? (
+          <button
+            type="button"
+            onClick={onEditLogo}
+            aria-label="Ubah logo HKBP Hutaraja"
+            title="Klik untuk mengubah logo"
+            style={{
+              position: 'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 11,
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              color: 'inherit',
+              cursor: 'pointer',
+              textAlign: 'left',
+            }}
+          >
+            <span style={{ position: 'relative', display: 'inline-flex' }}>
+              <BrandLogo logo={brandLogo} size={22} />
+              <span
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  right: -4,
+                  bottom: -4,
+                  width: 18,
+                  height: 18,
+                  borderRadius: 999,
+                  background: 'var(--sf)',
+                  border: '1px solid var(--ln)',
+                  color: 'var(--ink)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(11, 26, 29, 0.16)',
+                }}
+              >
+                <UiIcon name="pencil" size={10} />
+              </span>
+            </span>
+            <span className="mare-wordmark">
+              HKBP <span className="mare-wordmark-accent">Hutaraja</span>
+            </span>
+          </button>
+        ) : (
+          <>
+            <BrandLogo logo={brandLogo} size={22} />
+            <span className="mare-wordmark">
+              HKBP <span className="mare-wordmark-accent">Hutaraja</span>
+            </span>
+          </>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

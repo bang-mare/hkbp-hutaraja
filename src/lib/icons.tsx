@@ -452,7 +452,9 @@ export function UiIcon({
     | 'tabShare'
     | 'tabPreview'
     | 'logout'
-    | 'camera';
+    | 'camera'
+    | 'pencil'
+    | 'close';
   size?: number;
   className?: string;
 }) {
@@ -579,6 +581,20 @@ export function UiIcon({
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
           <polyline points="16 17 21 12 16 7" />
           <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      );
+    case 'pencil':
+      return (
+        <svg {...props}>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+      );
+    case 'close':
+      return (
+        <svg {...props}>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       );
   }

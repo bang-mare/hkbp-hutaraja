@@ -20,6 +20,7 @@ create table public.links (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles(id) on delete cascade,
   title text not null check (char_length(title) between 1 and 70),
+  description text not null default '' check (char_length(description) <= 120),
   url text not null check (url ~* '^(https?://|mailto:)'),
   icon text,
   color text check (color is null or color ~ '^#[0-9a-fA-F]{6}$'),

@@ -78,6 +78,7 @@ export interface SocialLinks {
 export interface LinkItem {
   id: string;
   title: string;
+  desc: string;
   url: string;
   on: boolean;
   clicks: number;
@@ -97,6 +98,7 @@ export interface StyleConfig {
   ac: string;
   tc: string;
   bc: string;
+  brandLogo?: string;
 }
 
 export interface FooterConfig {

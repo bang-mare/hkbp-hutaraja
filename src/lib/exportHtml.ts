@@ -4,7 +4,6 @@ import { LineIcon, UiIcon, WaveLogoIcon, detectIconFromUrl } from './icons';
 import {
   autoContrastText,
   buildSocialUrl,
-  extractDomain,
   getThemePreset,
   sanitizeSafeHref,
 } from './theme';
@@ -85,7 +84,7 @@ export function generateStaticPublicHtml(data: EditorState): string {
       ? `<ul class="mare-pub-links">${visibleLinks
           .map((item, idx) => {
             const iconName: IconId = item.ic || detectIconFromUrl(item.url);
-            const domain = extractDomain(item.url);
+            const descText = item.desc.trim();
 
             const lbg = item.color
               ? item.color
@@ -121,8 +120,8 @@ export function generateStaticPublicHtml(data: EditorState): string {
             const arrowSvg = renderToStaticMarkup(React.createElement(UiIcon, { name: 'arrowTr', size: 16 }));
 
             return `<li class="mare-pub-link-item" style="--delay:${180 + idx * 70}ms"><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="mare-pub-link" style="--lbg:${escapeHtml(lbg)};--lfg:${escapeHtml(lfg)};--lbd:${escapeHtml(lbd)};--lic-bg:${escapeHtml(licBg)};--larrow-bg:${escapeHtml(arrowBg)};--larrow-fg:${escapeHtml(arrowFg)};--larrow-bd:${escapeHtml(arrowBd)}"><span class="mare-pub-link-ic">${iconSvg}</span><span class="mare-pub-link-body"><span class="mare-pub-link-title">${escapeHtml(item.title)}</span>${
-              domain
-                ? `<span class="mare-pub-link-domain">${escapeHtml(domain)}</span>`
+              descText
+                ? `<span class="mare-pub-link-domain">${escapeHtml(descText)}</span>`
                 : ''
             }</span><span class="mare-pub-link-arrow" aria-hidden="true">${arrowSvg}</span></a></li>`;
           })
@@ -177,7 +176,7 @@ export function generateStaticPublicHtml(data: EditorState): string {
     .mare-pub-link-ic{width:44px;height:44px;flex-shrink:0;border-radius:calc(var(--pr) * 0.5);background:var(--lic-bg);display:inline-flex;align-items:center;justify-content:center}
     .mare-pub-link-body{flex:1 1 auto;min-width:0}
     .mare-pub-link-title{display:block;font-size:15px;font-weight:700;line-height:1.3;word-break:break-word}
-    .mare-pub-link-domain{display:block;margin-top:2px;font-size:12px;opacity:.62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mare-pub-link-domain{display:block;margin-top:2px;font-size:12px;line-height:1.35;opacity:.72;word-break:break-word}
     .mare-pub-link-arrow{width:32px;height:32px;border-radius:999px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:var(--larrow-bg);color:var(--larrow-fg);border:var(--larrow-bd,none);transition:transform 170ms ease}
     .mare-pub-link:hover .mare-pub-link-arrow{transform:translate(2px,-2px)}
     .mare-pub-empty{width:100%;padding:20px 16px;border-radius:18px;border:1.5px dashed color-mix(in srgb,var(--pfg) 30%,transparent);font-size:13.5px;opacity:.8;margin:24px 0 28px}

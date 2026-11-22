@@ -594,6 +594,23 @@ export const TabLink: React.FC<TabLinkProps> = ({
 
                       <button
                         type="button"
+                        className="mare-btn-ghost mare-btn-sm"
+                        aria-label="Pilih ikon link"
+                        aria-expanded={panelMode === 'icon'}
+                        onClick={() => togglePanel(item.id, 'icon')}
+                        style={{
+                          minHeight: 42,
+                          borderColor: panelMode === 'icon' ? 'var(--ac)' : 'var(--ln)',
+                          background: panelMode === 'icon' ? 'var(--acs)' : 'var(--sf)',
+                          color: panelMode === 'icon' ? 'var(--acx)' : 'var(--ink)',
+                        }}
+                      >
+                        <LineIcon name={effectiveIcon} size={17} />
+                        <span>Ikon</span>
+                      </button>
+
+                      <button
+                        type="button"
                         className="mare-btn-icon"
                         aria-label="Atur warna link"
                         aria-expanded={panelMode === 'color'}
@@ -706,6 +723,7 @@ export const TabLink: React.FC<TabLinkProps> = ({
                             <button
                               key={opt.id}
                               type="button"
+                              title={opt.label}
                               aria-label={opt.label}
                               aria-pressed={selected}
                               onClick={() => {

@@ -245,6 +245,18 @@ export const VALID_ICON_IDS: IconId[] = [
   'chat',
   'code',
   'user',
+  'church',
+  'cross',
+  'users',
+  'megaphone',
+  'doc',
+  'mic',
+  'wallet',
+  'clock',
+  'bell',
+  'image',
+  'home',
+  'info',
 ];
 
 export const RESERVED_USERNAMES = new Set([

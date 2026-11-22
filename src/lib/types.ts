@@ -47,7 +47,19 @@ export type IconId =
   | 'download'
   | 'chat'
   | 'code'
-  | 'user';
+  | 'user'
+  | 'church'
+  | 'cross'
+  | 'users'
+  | 'megaphone'
+  | 'doc'
+  | 'mic'
+  | 'wallet'
+  | 'clock'
+  | 'bell'
+  | 'image'
+  | 'home'
+  | 'info';
 
 export interface ProfileInfo {
   name: string;

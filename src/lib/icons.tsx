@@ -37,6 +37,18 @@ export const ICON_OPTIONS: IconOption[] = [
   { id: 'chat', label: 'Obrolan' },
   { id: 'code', label: 'Kode' },
   { id: 'user', label: 'Pengguna' },
+  { id: 'church', label: 'Gereja' },
+  { id: 'cross', label: 'Salib' },
+  { id: 'users', label: 'Jemaat' },
+  { id: 'megaphone', label: 'Warta' },
+  { id: 'doc', label: 'Dokumen' },
+  { id: 'mic', label: 'Khotbah' },
+  { id: 'wallet', label: 'Persembahan' },
+  { id: 'clock', label: 'Jadwal' },
+  { id: 'bell', label: 'Pengingat' },
+  { id: 'image', label: 'Galeri' },
+  { id: 'home', label: 'Beranda' },
+  { id: 'info', label: 'Informasi' },
 ];
 
 export function detectIconFromUrl(url: string): IconId {
@@ -311,6 +323,101 @@ export function LineIcon({
         <svg {...props}>
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
+    case 'church':
+      return (
+        <svg {...props}>
+          <path d="M12 2v4M10 4h4" />
+          <path d="M8 10l4-4 4 4" />
+          <path d="M6 12v9h12v-9l-6-4-6 4z" />
+          <path d="M10 21v-5a2 2 0 0 1 4 0v5" />
+        </svg>
+      );
+    case 'cross':
+      return (
+        <svg {...props}>
+          <path d="M12 3v18" />
+          <path d="M7 8h10" />
+        </svg>
+      );
+    case 'users':
+      return (
+        <svg {...props}>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    case 'megaphone':
+      return (
+        <svg {...props}>
+          <path d="M3 11l14-5v12L3 13v-2z" />
+          <path d="M11 14.5l1.5 5.5" />
+          <path d="M20 9a5 5 0 0 1 0 6" />
+        </svg>
+      );
+    case 'doc':
+      return (
+        <svg {...props}>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="8" y1="13" x2="16" y2="13" />
+          <line x1="8" y1="17" x2="14" y2="17" />
+        </svg>
+      );
+    case 'mic':
+      return (
+        <svg {...props}>
+          <rect x="9" y="2" width="6" height="11" rx="3" />
+          <path d="M5 10a7 7 0 0 0 14 0" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+        </svg>
+      );
+    case 'wallet':
+      return (
+        <svg {...props}>
+          <path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2" />
+          <path d="M21 12a2 2 0 0 0-2-2h-5a2 2 0 0 0 0 4h5a2 2 0 0 0 2-2z" />
+        </svg>
+      );
+    case 'clock':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="9" />
+          <polyline points="12 7 12 12 15.5 14" />
+        </svg>
+      );
+    case 'bell':
+      return (
+        <svg {...props}>
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      );
+    case 'image':
+      return (
+        <svg {...props}>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
+        </svg>
+      );
+    case 'home':
+      return (
+        <svg {...props}>
+          <path d="M3 9.5L12 3l9 6.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9.5z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case 'info':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="9" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <circle cx="12" cy="8" r="0.5" fill="currentColor" />
         </svg>
       );
     case 'link':

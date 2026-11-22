@@ -58,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
           <WaveLogoIcon size={22} />
         </div>
         <span className="mare-wordmark">
-          MARE<span className="mare-wordmark-accent">-ID</span>
+          HKBP <span className="mare-wordmark-accent">Hutaraja</span>
         </span>
       </div>
 

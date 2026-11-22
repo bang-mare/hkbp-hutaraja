@@ -260,8 +260,8 @@ export const RESERVED_USERNAMES = new Set([
   'settings',
   'static',
   'assets',
-  'mare',
-  'mare-id',
+  'hkbp',
+  'hkbp-hutaraja',
   'support',
   'help',
   'www',
@@ -420,7 +420,7 @@ export const DEFAULT_STYLE: StyleConfig = {
 
 export const DEFAULT_FOOTER: FooterConfig = {
   on: true,
-  text: 'Dibuat dengan MARE-ID',
+  text: 'Dibuat dengan HKBP Hutaraja',
   logo: true,
   url: '',
   style: 'teks',
@@ -488,7 +488,7 @@ export function validateFooterConfig(raw: unknown): FooterConfig {
     text:
       typeof obj.text === 'string'
         ? obj.text.slice(0, 60)
-        : 'Dibuat dengan MARE-ID',
+        : 'Dibuat dengan HKBP Hutaraja',
     logo: typeof obj.logo === 'boolean' ? obj.logo : true,
     url: safeUrl === '#' ? '' : safeUrl,
     style: validStyles.includes(obj.style as FooterStyle)

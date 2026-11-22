@@ -379,7 +379,7 @@ export const TabTampilan: React.FC<TabTampilanProps> = ({
                 type="text"
                 className="mare-input"
                 maxLength={60}
-                placeholder="Dibuat dengan MARE-ID"
+                placeholder="Dibuat dengan HKBP Hutaraja"
                 value={footer.text}
                 onChange={(e) =>
                   onFooterChange({ text: e.target.value.slice(0, 60) })
@@ -399,7 +399,7 @@ export const TabTampilan: React.FC<TabTampilanProps> = ({
                 type="url"
                 inputMode="url"
                 className="mare-input"
-                placeholder="https://mare.id"
+                placeholder="https://hkbp-hutaraja.vercel.app"
                 value={footer.url}
                 onChange={(e) => onFooterChange({ url: e.target.value })}
               />

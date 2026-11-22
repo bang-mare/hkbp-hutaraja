@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { WaveLogoIcon } from '../lib/icons';
-import { getSupabaseClient } from '../lib/supabase';
+import { getSiteHost, getSupabaseClient } from '../lib/supabase';
 import {
   DEFAULT_FOOTER,
   DEFAULT_STYLE,
@@ -131,7 +131,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
               <WaveLogoIcon size={22} />
             </div>
             <span className="mare-wordmark">
-              MARE<span className="mare-wordmark-accent">-ID</span>
+              HKBP <span className="mare-wordmark-accent">Hutaraja</span>
             </span>
           </div>
 
@@ -175,7 +175,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
               }}
             >
               <span style={{ fontSize: 14, color: 'var(--mu)', fontWeight: 600, flexShrink: 0 }}>
-                mare.id/
+                {getSiteHost()}/
               </span>
               <input
                 id="onboarding-username"

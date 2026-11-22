@@ -1,6 +1,6 @@
 {
-  "name": "MARE-ID",
-  "description": "Pembuat halaman link-in-bio untuk kreator Indonesia.",
+  "name": "HKBP Hutaraja",
+  "description": "Pembuat halaman link-in-bio untuk HKBP Hutaraja.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

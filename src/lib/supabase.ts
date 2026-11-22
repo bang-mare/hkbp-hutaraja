@@ -49,5 +49,13 @@ export function getSiteUrl(): string {
   if (typeof window !== 'undefined') {
     return window.location.origin.replace(/\/+$/, '');
   }
-  return 'https://mare.id';
+  return 'https://hkbp-hutaraja.vercel.app';
+}
+
+export function getSiteHost(): string {
+  try {
+    return new URL(getSiteUrl()).host;
+  } catch {
+    return 'hkbp-hutaraja.vercel.app';
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WaveLogoIcon } from '../lib/icons';
-import { getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
+import { getSiteHost, getSupabaseClient, isSupabaseConfigured } from '../lib/supabase';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -84,7 +84,7 @@ export const LoginPage: React.FC = () => {
             <WaveLogoIcon size={22} />
           </div>
           <span className="mare-wordmark">
-            MARE<span className="mare-wordmark-accent">-ID</span>
+            HKBP <span className="mare-wordmark-accent">Hutaraja</span>
           </span>
         </div>
 
@@ -92,10 +92,10 @@ export const LoginPage: React.FC = () => {
           className="font-display"
           style={{ margin: '0 0 6px', fontSize: 24, fontWeight: 800 }}
         >
-          Masuk ke MARE-ID
+          Masuk ke HKBP Hutaraja
         </h1>
         <p style={{ margin: '0 0 20px', fontSize: 14, color: 'var(--mu)', lineHeight: 1.55 }}>
-          Atur halaman link-in-bio kamu dan bagikan tautan mare.id/username ke audiensmu.
+          Atur halaman tautan kamu dan bagikan alamat {getSiteHost()}/username ke jemaat maupun pengunjung.
         </p>
 
         {!isSupabaseConfigured ? (

@@ -44,7 +44,7 @@ export const NotFoundPage: React.FC = () => {
           onClick={() => navigate('/login')}
           style={{ width: '100%' }}
         >
-          Buat halaman di MARE-ID
+          Buat halaman di HKBP Hutaraja
         </button>
       </div>
     </main>

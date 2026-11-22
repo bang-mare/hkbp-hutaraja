@@ -8,12 +8,12 @@ create table public.profiles (
   avatar_url text,
   social jsonb not null default '{}'::jsonb,
   style jsonb not null default '{"theme":"laut","shape":"bulat","fill":"solid","font":"netral","bg":"","card":"","ac":"","tc":"","bc":""}'::jsonb,
-  footer jsonb not null default '{"on":true,"text":"Dibuat dengan MARE-ID","logo":true,"url":"","style":"teks"}'::jsonb,
+  footer jsonb not null default '{"on":true,"text":"Dibuat dengan HKBP Hutaraja","logo":true,"url":"","style":"teks"}'::jsonb,
   is_published boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint username_format check (username ~ '^[a-z0-9._-]{3,30}$'),
-  constraint username_not_reserved check (username not in ('admin','app','api','login','logout','signup','auth','r','dashboard','settings','static','assets','mare','mare-id','support','help','www','null','undefined'))
+  constraint username_not_reserved check (username not in ('admin','app','api','login','logout','signup','auth','r','dashboard','settings','static','assets','hkbp','hkbp-hutaraja','support','help','www','null','undefined'))
 );
 
 create table public.links (

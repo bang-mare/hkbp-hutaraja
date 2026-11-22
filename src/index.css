@@ -104,7 +104,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* MARE-ID Modern UI Components */
+/* HKBP Hutaraja Modern UI Components */
 .mare-shell {
   max-width: 1040px;
   margin: 0 auto;
@@ -149,7 +149,7 @@ body {
 .mare-wordmark {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 24px;
+  font-size: clamp(17px, 4.5vw, 22px);
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;

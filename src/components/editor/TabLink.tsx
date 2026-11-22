@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ICON_OPTIONS, LineIcon, UiIcon, detectIconFromUrl } from '../../lib/icons';
+import { getSiteHost } from '../../lib/supabase';
 import { LINK_COLOR_PRESETS, normalizeUrl, normalizeWhatsappDigits } from '../../lib/theme';
 import type { IconId, LinkItem, ProfileInfo, SocialLinks } from '../../lib/types';
 
@@ -268,7 +269,7 @@ export const TabLink: React.FC<TabLinkProps> = ({
               }}
             >
               <span style={{ fontSize: 14, color: 'var(--mu)', fontWeight: 600, flexShrink: 0 }}>
-                mare.id/
+                {getSiteHost()}/
               </span>
               <input
                 id="profil-username"

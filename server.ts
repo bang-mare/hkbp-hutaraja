@@ -122,7 +122,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`MARE-ID berjalan di http://0.0.0.0:${PORT}`);
+    console.log(`HKBP Hutaraja berjalan di http://0.0.0.0:${PORT}`);
   });
 }
 

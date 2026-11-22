@@ -4,6 +4,8 @@ import type { SaveStatus } from '../lib/types';
 
 interface HeaderProps {
   saveStatus: SaveStatus;
+  hasUnsavedChanges: boolean;
+  onSaveNow: () => void;
   onRetrySave: () => void;
   username: string;
   name: string;
@@ -14,6 +16,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   saveStatus,
+  hasUnsavedChanges,
+  onSaveNow,
   onRetrySave,
   username,
   name,
@@ -42,14 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [menuOpen]);
 
-  const initial = (name.trim()[0] || username.trim()[0] || 'M').toUpperCase();
-
-  const statusText =
-    saveStatus === 'saving'
-      ? 'Menyimpan...'
-      : saveStatus === 'error'
-      ? 'Gagal menyimpan'
-      : 'Tersimpan';
+  const initial = (name.trim()[0] || username.trim()[0] || 'H').toUpperCase();
 
   return (
     <header className="mare-header">
@@ -63,13 +60,13 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div className="mare-status-pill" role="status" aria-live="polite">
-          <span
-            className={`mare-status-dot mare-status-dot--${saveStatus}`}
-            aria-hidden="true"
-          />
-          <span>{statusText}</span>
-          {saveStatus === 'error' && (
+        {saveStatus === 'error' ? (
+          <div className="mare-status-pill" role="status" aria-live="polite">
+            <span
+              className="mare-status-dot mare-status-dot--error"
+              aria-hidden="true"
+            />
+            <span>Gagal menyimpan</span>
             <button
               type="button"
               onClick={onRetrySave}
@@ -86,8 +83,34 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Coba lagi
             </button>
-          )}
-        </div>
+          </div>
+        ) : saveStatus === 'saving' ? (
+          <div className="mare-status-pill" role="status" aria-live="polite">
+            <span
+              className="mare-status-dot mare-status-dot--saving"
+              aria-hidden="true"
+            />
+            <span>Menyimpan...</span>
+          </div>
+        ) : hasUnsavedChanges ? (
+          <button
+            type="button"
+            className="mare-btn-primary mare-btn-sm"
+            onClick={onSaveNow}
+            aria-label="Simpan perubahan"
+          >
+            <UiIcon name="check" size={16} />
+            <span>Simpan</span>
+          </button>
+        ) : (
+          <div className="mare-status-pill" role="status" aria-live="polite">
+            <span
+              className="mare-status-dot mare-status-dot--saved"
+              aria-hidden="true"
+            />
+            <span>Tersimpan</span>
+          </div>
+        )}
 
         <div ref={menuRef} style={{ position: 'relative' }}>
           <button

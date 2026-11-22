@@ -46,7 +46,7 @@ export function generateStaticPublicHtml(data: EditorState): string {
       ? "'Bricolage Grotesque', system-ui, sans-serif"
       : "'Inter', system-ui, sans-serif";
 
-  const displayName = profile.name.trim() || `@${profile.user || 'kreator'}`;
+  const displayName = profile.name.trim() || profile.user || 'HKBP Hutaraja';
   const initialChar = (
     profile.name.trim()[0] ||
     profile.user.trim()[0] ||
@@ -201,7 +201,6 @@ export function generateStaticPublicHtml(data: EditorState): string {
       <div class="mare-pub-head-anim" style="display:flex;flex-direction:column;align-items:center;width:100%">
         <div class="mare-pub-avatar">${avatarMarkup}</div>
         <h1 class="mare-pub-name">${escapeHtml(displayName)}</h1>
-        ${profile.user ? `<div class="mare-pub-handle">@${escapeHtml(profile.user)}</div>` : ''}
         ${profile.bio.trim() ? `<p class="mare-pub-bio">${escapeHtml(profile.bio)}</p>` : ''}
         ${socialMarkup}
       </div>

@@ -58,7 +58,7 @@ export const PublicPage: React.FC<PublicPageProps> = ({
     '--pbd': style.bc || undefined,
   };
 
-  const displayName = profile.name.trim() || `@${profile.user || 'kreator'}`;
+  const displayName = profile.name.trim() || profile.user || 'HKBP Hutaraja';
   const initialChar = (
     profile.name.trim()[0] ||
     profile.user.trim()[0] ||
@@ -152,10 +152,6 @@ export const PublicPage: React.FC<PublicPageProps> = ({
           </div>
 
           <h1 className="mare-pub-name">{displayName}</h1>
-
-          {profile.user && (
-            <div className="mare-pub-handle">@{profile.user}</div>
-          )}
 
           {profile.bio.trim() && (
             <p className="mare-pub-bio">{profile.bio}</p>

@@ -68,6 +68,7 @@ export const EditorPage: React.FC = () => {
   const [state, setState] = useState<EditorState>(() => createInitialEditorState());
   const [activeTab, setActiveTab] = useState<EditorTab>(getInitialTab);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
@@ -206,8 +207,11 @@ export const EditorPage: React.FC = () => {
       if (error) {
         setSaveStatus('error');
         showToast('Gagal menyimpan. Coba lagi.');
+        return false;
       } else {
         setSaveStatus('saved');
+        setHasUnsavedChanges(false);
+        return true;
       }
     },
     [user, showToast]
@@ -215,7 +219,7 @@ export const EditorPage: React.FC = () => {
 
   const scheduleProfileSave = useCallback(
     (nextState: EditorState) => {
-      setSaveStatus('saving');
+      setHasUnsavedChanges(true);
       if (profileTimerRef.current) {
         window.clearTimeout(profileTimerRef.current);
       }
@@ -281,8 +285,11 @@ export const EditorPage: React.FC = () => {
       if (err) {
         setSaveStatus('error');
         showToast('Gagal menyimpan. Coba lagi.');
+        return false;
       } else {
         setSaveStatus('saved');
+        setHasUnsavedChanges(false);
+        return true;
       }
     },
     [user, showToast]
@@ -290,13 +297,13 @@ export const EditorPage: React.FC = () => {
 
   const scheduleLinkSave = useCallback(
     (link: LinkItem, position: number) => {
+      setHasUnsavedChanges(true);
       if (linkTimersRef.current[link.id]) {
         window.clearTimeout(linkTimersRef.current[link.id]);
       }
       if (!isLinkValidForDb(link) && !persistedLinkIdsRef.current.has(link.id)) {
         return;
       }
-      setSaveStatus('saving');
       linkTimersRef.current[link.id] = window.setTimeout(() => {
         persistSingleLinkNow(link, position);
       }, 600);
@@ -304,11 +311,31 @@ export const EditorPage: React.FC = () => {
     [persistSingleLinkNow]
   );
 
-  const handleRetrySave = async () => {
-    await persistProfileNow(stateRef.current);
-    for (let i = 0; i < stateRef.current.links.length; i++) {
-      await persistSingleLinkNow(stateRef.current.links[i], i);
+  const handleSaveNow = async (showSuccessToast = true) => {
+    if (profileTimerRef.current) {
+      window.clearTimeout(profileTimerRef.current);
+      profileTimerRef.current = null;
     }
+    Object.values(linkTimersRef.current).forEach((t) => window.clearTimeout(t));
+    linkTimersRef.current = {};
+
+    const profileOk = await persistProfileNow(stateRef.current);
+    let allLinksOk = true;
+    for (let i = 0; i < stateRef.current.links.length; i++) {
+      const ok = await persistSingleLinkNow(stateRef.current.links[i], i);
+      if (ok === false) allLinksOk = false;
+    }
+
+    if (profileOk && allLinksOk) {
+      setHasUnsavedChanges(false);
+      if (showSuccessToast) {
+        showToast('Perubahan disimpan');
+      }
+    }
+  };
+
+  const handleRetrySave = async () => {
+    await handleSaveNow(true);
   };
 
   const handleProfileChange = (patch: Partial<ProfileInfo>) => {
@@ -729,6 +756,8 @@ export const EditorPage: React.FC = () => {
     <div className="mare-shell">
       <Header
         saveStatus={saveStatus}
+        hasUnsavedChanges={hasUnsavedChanges}
+        onSaveNow={() => handleSaveNow(true)}
         onRetrySave={handleRetrySave}
         username={state.profile.user}
         name={state.profile.name}
@@ -816,6 +845,51 @@ export const EditorPage: React.FC = () => {
                 }, 60);
               }}
             />
+          )}
+
+          {(activeTab === 'link' || activeTab === 'tampilan' || activeTab === 'bagikan') && (
+            <div
+              className="mare-card"
+              style={{
+                marginTop: 16,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                flexWrap: 'wrap',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  className={`mare-status-dot mare-status-dot--${
+                    saveStatus === 'error'
+                      ? 'error'
+                      : saveStatus === 'saving' || hasUnsavedChanges
+                      ? 'saving'
+                      : 'saved'
+                  }`}
+                  aria-hidden="true"
+                />
+                <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--mu)' }}>
+                  {saveStatus === 'error'
+                    ? 'Gagal menyimpan perubahan'
+                    : saveStatus === 'saving'
+                    ? 'Menyimpan perubahan...'
+                    : hasUnsavedChanges
+                    ? 'Ada perubahan belum disimpan'
+                    : 'Semua perubahan tersimpan'}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="mare-btn-primary"
+                disabled={saveStatus === 'saving'}
+                onClick={() => handleSaveNow(true)}
+              >
+                <UiIcon name="check" size={17} />
+                <span>{saveStatus === 'saving' ? 'Menyimpan...' : 'Simpan'}</span>
+              </button>
+            </div>
           )}
         </main>
 

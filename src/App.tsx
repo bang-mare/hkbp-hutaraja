@@ -14,6 +14,10 @@ export default function App() {
 
   // Redirect pengguna yang sudah login dari /login ke /app, atau / ke /app atau /login
   useEffect(() => {
+    if (cleanPath === '/dashboard') {
+      navigate('/app', true);
+      return;
+    }
     if (cleanPath !== '/' && cleanPath !== '/login') return;
     if (!isSupabaseConfigured) {
       if (cleanPath === '/') navigate('/login', true);
@@ -47,7 +51,7 @@ export default function App() {
     return <AuthCallbackPage />;
   }
 
-  if (cleanPath === '/app') {
+  if (cleanPath === '/app' || cleanPath === '/dashboard') {
     return <EditorPage />;
   }
 

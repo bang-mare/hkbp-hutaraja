@@ -650,6 +650,34 @@ export const EditorPage: React.FC = () => {
     navigate('/login', true);
   };
 
+  useEffect(() => {
+    if (!user || !hasProfile) return;
+    if (activeTab !== 'statistik' && activeTab !== 'link') return;
+
+    const refreshClicks = async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return;
+      const { data: rows } = await supabase
+        .from('links')
+        .select('id, clicks_total')
+        .eq('profile_id', user.id);
+      if (!Array.isArray(rows)) return;
+      const clickMap = new Map(
+        rows.map((r) => [String(r.id), Number(r.clicks_total || 0)])
+      );
+      setState((prev) => ({
+        ...prev,
+        links: prev.links.map((l) =>
+          clickMap.has(l.id) ? { ...l, clicks: clickMap.get(l.id)! } : l
+        ),
+      }));
+    };
+
+    refreshClicks();
+    window.addEventListener('focus', refreshClicks);
+    return () => window.removeEventListener('focus', refreshClicks);
+  }, [activeTab, user, hasProfile]);
+
   if (authLoading) {
     return (
       <main
@@ -777,6 +805,16 @@ export const EditorPage: React.FC = () => {
             <TabPratinjau
               state={state}
               onPreviewBlocked={handlePreviewBlocked}
+              onJumpToFooter={() => {
+                handleTabChange('tampilan');
+                window.setTimeout(() => {
+                  const card = document.getElementById('card-footer-title');
+                  card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  const input = document.getElementById('footer-teks') as HTMLInputElement | null;
+                  input?.focus();
+                  input?.select();
+                }, 60);
+              }}
             />
           )}
         </main>
@@ -786,6 +824,23 @@ export const EditorPage: React.FC = () => {
             data={state}
             onPreviewBlocked={handlePreviewBlocked}
           />
+          <button
+            type="button"
+            className="mare-btn-ghost mare-btn-sm"
+            style={{ marginTop: 12 }}
+            onClick={() => {
+              handleTabChange('tampilan');
+              window.setTimeout(() => {
+                const card = document.getElementById('card-footer-title');
+                card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const input = document.getElementById('footer-teks') as HTMLInputElement | null;
+                input?.focus();
+                input?.select();
+              }, 60);
+            }}
+          >
+            Ubah teks footer
+          </button>
         </aside>
       </div>
 

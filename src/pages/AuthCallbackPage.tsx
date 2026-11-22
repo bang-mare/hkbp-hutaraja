@@ -8,16 +8,28 @@ export const AuthCallbackPage: React.FC = () => {
 
   useEffect(() => {
     let active = true;
-    const finishAuth = async () => {
-      const supabase = getSupabaseClient();
-      if (!supabase) {
-        navigate('/login', true);
-        return;
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      navigate('/login', true);
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get('error_description') || params.get('error');
+    if (oauthError) {
+      setErrorMsg('Proses masuk dibatalkan atau gagal. Silakan coba lagi.');
+      return;
+    }
+
+    const { data: authSub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        navigate('/app', true);
       }
+    });
 
-      const params = new URLSearchParams(window.location.search);
+    const finishAuth = async () => {
       const code = params.get('code');
-
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!active) return;
@@ -39,8 +51,10 @@ export const AuthCallbackPage: React.FC = () => {
     };
 
     finishAuth();
+
     return () => {
       active = false;
+      authSub.subscription.unsubscribe();
     };
   }, []);
 

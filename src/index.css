@@ -373,6 +373,8 @@ body {
 
 .mare-toggle input {
   position: absolute;
+  inset: 0;
+  z-index: 2;
   opacity: 0;
   width: 46px;
   height: 28px;
@@ -387,6 +389,7 @@ body {
   background: var(--ln);
   transition: background 180ms ease;
   position: relative;
+  pointer-events: none;
 }
 
 .mare-toggle-thumb {
